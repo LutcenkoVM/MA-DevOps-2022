@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_DB: wiki
+      POSTGRES_USER: wikiuser
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+  
+  wiki:
+    image: requarks/wiki
+    restart: unless-stopped
+    ports:
+      - 80:3000
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: wikiuser
+      DB_PASS: passw0rd
+      DB_NAME: wiki
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+  
+  wiki-test:
+    image: lutsenkovm/wiki-test
+    restart: unless-stopped
+    volumes:
+      - ./:/mnt/test/
+      
+volumes:
+  db-data:
